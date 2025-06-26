@@ -3,29 +3,29 @@ const path = require('path');
 
 function getDeployments(network = 'sepolia') {
 	const deploymentsDir = path.join(__dirname, '..', 'deployments');
-	
+
 	const tokenFile = path.join(deploymentsDir, `token-${network}.json`);
 	const multisigFile = path.join(deploymentsDir, `multisig-${network}.json`);
-	
+
 	const deployments = {};
-	
+
 	if (fs.existsSync(tokenFile)) {
 		deployments.token = JSON.parse(fs.readFileSync(tokenFile, 'utf8'));
 	}
-	
+
 	if (fs.existsSync(multisigFile)) {
 		deployments.multisig = JSON.parse(fs.readFileSync(multisigFile, 'utf8'));
 	}
-	
+
 	return deployments;
 }
 
 function printDeployments(network = 'sepolia') {
 	console.log(`📋 Deployments on ${network.toUpperCase()}:`);
 	console.log('='.repeat(40));
-	
+
 	const deployments = getDeployments(network);
-	
+
 	if (deployments.token) {
 		console.log('\n🪙 TOKEN:');
 		console.log(`   Address: ${deployments.token.tokenAddress}`);
@@ -35,7 +35,7 @@ function printDeployments(network = 'sepolia') {
 		console.log(`   Block: ${deployments.token.blockNumber}`);
 		console.log(`   Deployed: ${deployments.token.timestamp}`);
 	}
-	
+
 	if (deployments.multisig) {
 		console.log('\n🔒 MULTISIG:');
 		console.log(`   Address: ${deployments.multisig.multisigAddress}`);
@@ -44,7 +44,7 @@ function printDeployments(network = 'sepolia') {
 		console.log(`   Block: ${deployments.multisig.blockNumber}`);
 		console.log(`   Deployed: ${deployments.multisig.timestamp}`);
 	}
-	
+
 	if (!deployments.token && !deployments.multisig) {
 		console.log('❌ No deployments found');
 	}

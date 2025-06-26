@@ -45,6 +45,30 @@ test-multisig: ## Run multisig tests only
 	@echo "$(GREEN)Testing MultiSigWallet...$(NC)"
 	@cd deployment && npx hardhat test test/Multisig.test.js
 
+test-deployments: ## Verify deployed contracts on Sepolia
+	@echo "$(GREEN)Verifying deployed contracts...$(NC)"
+	@cd deployment && npx hardhat run scripts/verify-deployment.js --network sepolia
+
+test-integration: ## Test integration between deployed contracts
+	@echo "$(GREEN)Testing contract integration...$(NC)"
+	@cd deployment && npx hardhat run scripts/get-deployments.js --network sepolia
+
+# Etherscan utilities
+etherscan: ## Show Etherscan links and verify contracts
+	@echo "$(GREEN)Getting Etherscan info and verifying contracts...$(NC)"
+	@cd deployment && npx hardhat run scripts/verify-deployment.js --network sepolia
+
+browse: ## Open contracts in browser (Linux)
+	@echo "$(GREEN)Opening contracts in browser...$(NC)"
+	@which xdg-open > /dev/null 2>&1 && \
+	cd deployment && \
+	export $$(grep '^TOKEN_ADDRESS=' .env) && \
+	export $$(grep '^MULTISIG_ADDRESS=' .env) && \
+	xdg-open "https://sepolia.etherscan.io/address/$$TOKEN_ADDRESS" && \
+	sleep 2 && \
+	xdg-open "https://sepolia.etherscan.io/address/$$MULTISIG_ADDRESS" || \
+	echo "$(RED)Error: xdg-open not found. Use 'make etherscan' to get links.$(NC)"
+
 # Local development
 local-node: ## Start local Hardhat node
 	@echo "$(GREEN)Starting local Hardhat node...$(NC)"
@@ -62,44 +86,20 @@ deploy-multisig: ## Deploy MultiSigWallet to Sepolia
 deploy-all: deploy-token deploy-multisig ## Deploy both contracts to Sepolia
 	@echo "$(GREEN)All contracts deployed to Sepolia$(NC)"
 
-# Verification
-verify-token: ## Verify MATTERN42Token on Etherscan (requires TOKEN_ADDRESS)
-ifndef TOKEN_ADDRESS
-	@echo "$(RED)ERROR: TOKEN_ADDRESS not set$(NC)"
-	@echo "$(YELLOW)Usage: make verify-token TOKEN_ADDRESS=0x...$(NC)"
-	@exit 1
-endif
+# Verification (integrated in test-deployments)
+verify-token: ## Verify MATTERN42Token on Etherscan
 	@echo "$(GREEN)Verifying MATTERN42Token...$(NC)"
-	@cd deployment && npx hardhat verify --network sepolia $(TOKEN_ADDRESS) "MATTERN42Token" "M42T" "100000000000000000000000"
+	@cd deployment && npx hardhat run scripts/verify-token.js --network sepolia
 
-verify-multisig: ## Verify MultiSigWallet on Etherscan (requires MULTISIG_ADDRESS and OWNERS)
-ifndef MULTISIG_ADDRESS
-	@echo "$(RED)ERROR: MULTISIG_ADDRESS not set$(NC)"
-	@echo "$(YELLOW)Usage: make verify-multisig MULTISIG_ADDRESS=0x... OWNERS='[\"0x...\",\"0x...\"]'$(NC)"
-	@exit 1
-endif
-ifndef OWNERS
-	@echo "$(RED)ERROR: OWNERS not set$(NC)"
-	@echo "$(YELLOW)Usage: make verify-multisig MULTISIG_ADDRESS=0x... OWNERS='[\"0x...\",\"0x...\"]'$(NC)"
-	@exit 1
-endif
+verify-multisig: ## Verify MultiSigWallet on Etherscan
 	@echo "$(GREEN)Verifying MultiSigWallet...$(NC)"
-	@cd deployment && npx hardhat verify --network sepolia $(MULTISIG_ADDRESS) '$(OWNERS)' 2
+	@cd deployment && npx hardhat run scripts/verify-multisig.js --network sepolia
 
 # Security operations
-transfer-ownership: ## Transfer token ownership to MultiSig (requires TOKEN_ADDRESS and MULTISIG_ADDRESS)
-ifndef TOKEN_ADDRESS
-	@echo "$(RED)ERROR: TOKEN_ADDRESS not set$(NC)"
-	@exit 1
-endif
-ifndef MULTISIG_ADDRESS
-	@echo "$(RED)ERROR: MULTISIG_ADDRESS not set$(NC)"
-	@exit 1
-endif
+transfer-ownership: ## Transfer token ownership to MultiSig
 	@echo "$(YELLOW)CRITICAL: Transferring ownership to MultiSig$(NC)"
-	@echo "$(YELLOW)Token: $(TOKEN_ADDRESS)$(NC)"
-	@echo "$(YELLOW)MultiSig: $(MULTISIG_ADDRESS)$(NC)"
-	@cd deployment && node scripts/transfer-ownership.js
+	@echo "$(GREEN)Loading addresses from .env...$(NC)"
+	@cd deployment && npx hardhat run scripts/transfer-ownership.js --network sepolia
 
 # View deployments
 deployments: ## Show all deployed contracts
@@ -115,6 +115,10 @@ check-gas: ## Check current gas prices on Sepolia
 	@echo "$(GREEN)Checking current gas prices...$(NC)"
 	@curl -s "https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=${ETHERSCAN_API_KEY}" | jq '.'
 	@echo "$(YELLOW)Your configured gas price: ${GAS_PRICE} gwei$(NC)"
+
+verify-deployment: ## Verify deployed contracts functionality
+	@echo "$(GREEN)Verifying deployed contracts...$(NC)"
+	@cd deployment && npx hardhat run scripts/verify-deployment.js --network sepolia
 
 faucet: ## Show faucet information for Sepolia
 	@echo "$(GREEN)Sepolia Testnet Faucets:$(NC)"

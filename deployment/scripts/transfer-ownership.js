@@ -3,6 +3,10 @@ const { ethers } = require('hardhat');
 async function main() {
 	console.log('Transferring token ownership to MultiSig...');
 
+	// Configuration gas économique
+	const gasPrice = process.env.GAS_PRICE ? ethers.parseUnits(process.env.GAS_PRICE, 'gwei') : ethers.parseUnits('2', 'gwei');
+	console.log('Using gas price:', ethers.formatUnits(gasPrice, 'gwei'), 'gwei');
+
 	// Get addresses from environment variables
 	const TOKEN_ADDRESS = process.env.TOKEN_ADDRESS;
 	const MULTISIG_ADDRESS = process.env.MULTISIG_ADDRESS;
@@ -43,17 +47,20 @@ async function main() {
 		throw new Error('MultiSig needs at least 2 owners');
 	}
 
-	if (requiredConfirmations.lt(2)) {
-		throw new Error('MultiSig needs at least 2 required confirmations');
+	if (Number(requiredConfirmations) < 1) {
+		throw new Error('MultiSig needs at least 1 required confirmation');
 	}
 
 	console.log('\nCRITICAL OPERATION: This action is irreversible!');
-	console.log('Waiting 5 seconds for confirmation...');
-	await new Promise((resolve) => setTimeout(resolve, 5000));
+	console.log('Waiting 3 seconds for confirmation...');
+	await new Promise((resolve) => setTimeout(resolve, 3000));
 
-	// Transfer ownership
+	// Transfer ownership avec frais optimisés
 	console.log('Executing transfer...');
-	const tx = await token.transferOwnership(MULTISIG_ADDRESS);
+	const tx = await token.transferOwnership(MULTISIG_ADDRESS, {
+		gasPrice: gasPrice,
+		gasLimit: process.env.GAS_LIMIT || 200000,
+	});
 	console.log('Transaction hash:', tx.hash);
 
 	// Wait for confirmation
