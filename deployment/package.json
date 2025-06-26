@@ -1,0 +1,21 @@
+{
+  "name": "mattern42-token-deployment",
+  "version": "1.0.0",
+  "description": "Deployment scripts for MATTERN42 Token with MultiSig functionality",
+  "main": "hardhat.config.js",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:sepolia": "hardhat run scripts/deploy-token.js --network sepolia",
+    "deploy:multisig": "hardhat run scripts/deploy-multisig.js --network sepolia",
+    "verify": "hardhat verify --network sepolia"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^3.0.0",
+    "hardhat": "^2.17.0"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.9.0",
+    "dotenv": "^16.3.0"
+  }
+}
