@@ -14,7 +14,7 @@ describe('MultiSigWallet', function () {
 		const MultiSigWallet = await ethers.getContractFactory('MultiSigWallet');
 		multisig = await MultiSigWallet.deploy(
 			owners.map((owner) => owner.address),
-			2 // require 2 confirmations
+			2
 		);
 	});
 
