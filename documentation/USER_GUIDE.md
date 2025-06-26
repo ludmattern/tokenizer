@@ -1,291 +1,213 @@
-# User Guide
+# Guide utilisateur
 
-This guide explains how to interact with MATTERN42 Token for different types of users.
+Guide d'utilisation de MATTERN42 Token pour les différents types d'utilisateurs.
 
-## For Token Holders
+## Pour les détenteurs de tokens
 
-### Getting Started
-
-#### 1. Add Token to Wallet
+### Ajouter le token à votre wallet
 
 ```
-Contract Address: 0x... (see deployment info)
-Token Symbol: M42T
-Decimals: 18
+Adresse du contrat : 0x... (voir info de déploiement)
+Symbole : M42T
+Décimales : 18
 ```
 
-#### 2. View Balance
+### Opérations de base
 
-Check your token balance in any compatible wallet (MetaMask, Trust Wallet, etc.)
+#### Envoyer des tokens
 
-#### 3. Transfer Tokens
+1. Ouvrir votre wallet (MetaMask, Trust Wallet, etc.)
+2. Sélectionner MATTERN42 Token
+3. Saisir l'adresse destinataire
+4. Saisir le montant
+5. Confirmer la transaction
 
-Use standard wallet transfer function or send to any Ethereum address.
+#### Recevoir des tokens
 
-### Basic Operations
+- Partager votre adresse de wallet
+- Les tokens apparaissent automatiquement après confirmation
 
-#### Sending Tokens
-
-1. Open your wallet
-2. Select MATTERN42 Token
-3. Enter recipient address
-4. Enter amount to send
-5. Confirm transaction
-
-#### Receiving Tokens
-
-- Share your wallet address
-- No action needed on your part
-- Tokens appear automatically after confirmation
-
-#### Burning Tokens
-
-Remove tokens from circulation permanently:
+#### Brûler des tokens
 
 ```javascript
-// Only you can burn your own tokens
-token.burn(amount)
+// Seuls vos propres tokens peuvent être brûlés
+token.burn(montant)
 ```
 
-## For Token Owners/Administrators
+## Pour les administrateurs
 
-### Owner Responsibilities
+### Responsabilités
 
-- Mint new tokens (within supply cap)
-- Pause/unpause transfers in emergencies
-- Transfer ownership to MultiSig wallet
-- Monitor token ecosystem health
+- Minter de nouveaux tokens (dans la limite du supply max)
+- Mettre en pause/reprendre les transferts en urgence
+- Transférer la propriété au MultiSig
+- Surveiller l'écosystème du token
 
-### Administrative Functions
+### Fonctions administratives
 
-#### Minting New Tokens
+#### Créer de nouveaux tokens
 
 ```javascript
-// Only owner can mint, respects max supply
-await token.mint(recipientAddress, amount);
+// Seul le propriétaire peut minter
+await token.mint(adresseDestinataire, montant);
 ```
 
-#### Emergency Pause
+#### Pause d'urgence
 
 ```javascript
-// Stop all transfers temporarily
+// Arrêter tous les transferts temporairement
 await token.pause();
 
-// Resume normal operations
+// Reprendre les opérations normales
 await token.unpause();
 ```
 
-#### Ownership Transfer
+#### Transfert de propriété
 
 ```javascript
-// Transfer to MultiSig for enhanced security
-await token.transferOwnership(multisigAddress);
+// Transférer au MultiSig pour plus de sécurité
+await token.transferOwnership(adresseMultisig);
 ```
 
-## For MultiSig Operators
+## Pour les opérateurs MultiSig
 
-### MultiSig Wallet Usage
+### Comprendre le système
 
-#### Understanding the System
+- Nécessite plusieurs signatures pour l'exécution
+- Défaut : 2 propriétaires sur 3 doivent approuver
+- Toutes les transactions sont visibles on-chain
+- Les propriétaires peuvent révoquer leur approbation avant exécution
 
-- Requires multiple signatures for execution
-- Default: 2 out of 3 owners must approve
-- All transactions are visible on-chain
-- Owners can revoke approval before execution
+### Opérations MultiSig
 
-### MultiSig Operations
-
-#### 1. Submit Transaction
+#### 1. Soumettre une transaction
 
 ```javascript
-// Propose new transaction
+// Proposer une nouvelle transaction
 await multisig.submitTransaction(
-    targetAddress,
-    ethValue,
-    encodedData
+    adresseCible,
+    valeurETH,
+    donneesEncodees
 );
 ```
 
-#### 2. Confirm Transaction
+#### 2. Confirmer une transaction
 
 ```javascript
-// Approve pending transaction
-await multisig.confirmTransaction(transactionIndex);
+// Approuver une transaction en attente
+await multisig.confirmTransaction(indexTransaction);
 ```
 
-#### 3. Execute Transaction
+#### 3. Exécuter une transaction
 
 ```javascript
-// Execute after enough confirmations
-await multisig.executeTransaction(transactionIndex);
+// Exécuter après confirmations suffisantes
+await multisig.executeTransaction(indexTransaction);
 ```
 
-#### 4. Revoke Confirmation
+#### 4. Révoquer une confirmation
 
 ```javascript
-// Withdraw approval before execution
-await multisig.revokeConfirmation(transactionIndex);
+// Retirer l'approbation avant exécution
+await multisig.revokeConfirmation(indexTransaction);
 ```
 
-### Common MultiSig Scenarios
+### Scénarios courants
 
-#### Mint Tokens via MultiSig
+#### Minter des tokens via MultiSig
 
-1. Owner submits mint transaction
-2. Other owners review and confirm
-3. Execute after required confirmations
-4. Tokens minted to target address
+1. Un propriétaire soumet la transaction mint
+2. Les autres propriétaires examinent et confirment
+3. Exécution après confirmations requises
+4. Tokens créés vers l'adresse cible
 
-#### Emergency Pause via MultiSig
+#### Pause d'urgence via MultiSig
 
-1. Owner submits pause transaction
-2. Quick confirmation from other owners
-3. Execute to pause all transfers
-4. Investigate issue and unpause when safe
+1. Un propriétaire soumet la transaction pause
+2. Confirmation rapide des autres propriétaires
+3. Exécution pour suspendre tous les transferts
+4. Investigation et reprise quand sécurisé
 
-## Wallet Integration
+## Intégration wallet
 
-### MetaMask Setup
+### Wallets supportés
 
-1. Install MetaMask browser extension
-2. Add token contract address
-3. Token appears in asset list
-4. Use normally for transfers
+- **MetaMask** : Extension navigateur
+- **Hardware wallets** : Ledger, Trezor (recommandé pour MultiSig)
+- **Wallets mobiles** : Trust Wallet, Rainbow, Coinbase Wallet
+- Tous les wallets compatibles ERC20
 
-### Hardware Wallet
+## Exemples de transactions
 
-- Ledger and Trezor supported
-- Enhanced security for large amounts
-- Recommended for MultiSig owners
-
-### Mobile Wallets
-
-- Trust Wallet
-- Rainbow Wallet
-- Coinbase Wallet
-- Most ERC20-compatible wallets
-
-## Transaction Examples
-
-### Basic Transfer
+### Transfert de base
 
 ```javascript
-// Transfer 100 M42T tokens
-const amount = ethers.utils.parseEther("100");
-await token.transfer(recipientAddress, amount);
+// Transférer 100 tokens M42T
+const montant = ethers.utils.parseEther("100");
+await token.transfer(adresseDestinataire, montant);
 ```
 
-### Approve and TransferFrom
+### Approve et TransferFrom
 
 ```javascript
-// Approve spender
-await token.approve(spenderAddress, amount);
+// Approuver un dépensier
+await token.approve(adresseDépensier, montant);
 
-// Spender transfers on your behalf
-await token.transferFrom(yourAddress, recipientAddress, amount);
+// Le dépensier transfère en votre nom
+await token.transferFrom(votreAdresse, adresseDestinataire, montant);
 ```
 
-### Check Allowance
+### Vérifier l'allocation
 
 ```javascript
-// See how much spender can transfer
-const allowance = await token.allowance(ownerAddress, spenderAddress);
+// Voir combien le dépensier peut transférer
+const allocation = await token.allowance(adressePropriétaire, adresseDépensier);
 ```
 
-## Common Use Cases
+## Résolution de problèmes
 
-### DeFi Integration
+### Échecs de transaction
 
-- Provide liquidity on DEXs
-- Use as collateral (where supported)
-- Participate in yield farming
-- Stake in compatible protocols
+- **Gas insuffisant** : Augmenter la limite de gas
+- **Solde insuffisant** : Vérifier le solde en tokens
+- **Contrat en pause** : Attendre la reprise
+- **Mauvais réseau** : Basculer vers Sepolia
 
-### Business Applications
+### Problèmes courants
 
-- Payment for services
-- Loyalty rewards program
-- Internal company token
-- Partnership settlements
+- **Tokens non visibles** : Ajouter manuellement l'adresse du contrat
+- **Frais de gas élevés** : Attendre une congestion moindre
+- **Transactions en attente** : Attendre ou augmenter le prix du gas
+- **Délais MultiSig** : Se coordonner avec les autres propriétaires
 
-### Investment Management
+## Sécurité
 
-- Long-term holding
-- Portfolio diversification
-- Automated trading bots
-- DCA strategies
+### Pour tous les utilisateurs
 
-## Troubleshooting
+- Vérifier les adresses des contrats avant interaction
+- Utiliser des hardware wallets pour de gros montants
+- Sauvegarder les clés privées de manière sécurisée
+- Vérifier les adresses destinataires
 
-### Transaction Failures
+### Pour les propriétaires MultiSig
 
-- **Insufficient gas**: Increase gas limit
-- **Insufficient balance**: Check token balance
-- **Contract paused**: Wait for unpause
-- **Wrong network**: Switch to correct network
+- Se coordonner avec les autres propriétaires
+- Examiner tous les détails des transactions
+- Utiliser des appareils séparés pour chaque propriétaire
+- Maintenir des canaux de communication sécurisés
 
-### Common Issues
+### Signaux d'alarme
 
-- **Tokens not showing**: Add contract address manually
-- **High gas fees**: Wait for lower network congestion
-- **Pending transactions**: Wait or increase gas price
-- **MultiSig delays**: Coordinate with other owners
+- Demandes de clés privées
+- Adresses de contrats non officielles
+- Pression pour approuver rapidement
+- Demandes de transactions inattendues
 
-### Getting Help
+## Support
 
-1. Check transaction on block explorer
-2. Verify contract addresses
-3. Confirm network selection
-4. Review error messages carefully
+Pour toute aide :
 
-## Security Best Practices
-
-### For All Users
-
-- Verify contract addresses before interacting
-- Use hardware wallets for large amounts
-- Keep private keys secure and backed up
-- Double-check recipient addresses
-
-### For MultiSig Owners
-
-- Coordinate with other owners before transactions
-- Review all transaction details carefully
-- Use separate devices for each owner
-- Maintain secure communication channels
-
-### Red Flags
-
-- Requests for private keys
-- Unofficial contract addresses
-- Pressure to approve quickly
-- Unexpected transaction requests
-
-## Advanced Features
-
-### Event Monitoring
-
-Monitor token events for:
-
-- Large transfers
-- Minting activities
-- Pause/unpause events
-- Ownership changes
-
-### API Integration
-
-```javascript
-// Listen for transfer events
-token.on("Transfer", (from, to, amount) => {
-    console.log(`Transfer: ${amount} from ${from} to ${to}`);
-});
-```
-
-### Analytics
-
-- Track token distribution
-- Monitor trading volumes
-- Analyze holder patterns
-- Track MultiSig activity
-
-Remember: Always verify information independently and never share private keys or seed phrases.
+1. Vérifier la transaction sur Etherscan
+2. Confirmer les adresses des contrats
+3. Vérifier la sélection du réseau
+4. Consulter la documentation technique

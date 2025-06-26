@@ -13,30 +13,27 @@ module.exports = {
 		},
 	},
 	networks: {
+		hardhat: {
+			chainId: 31337,
+		},
 		sepolia: {
 			url: `https://sepolia.infura.io/v3/${process.env.INFURA_API_KEY}`,
-			accounts: [process.env.PRIVATE_KEY],
-		},
-		bscTestnet: {
-			url: 'https://data-seed-prebsc-1-s1.binance.org:8545',
-			accounts: [process.env.PRIVATE_KEY],
+			accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+			chainId: 11155111,
+			// Configuration pour frais minimum
+			gasPrice: 2000000000, // 2 gwei (très bas)
+			gas: 6000000, // Limite de gas raisonnable
+			// Timeout plus long pour transactions lentes
+			timeout: 120000,
 		},
 	},
 	etherscan: {
 		apiKey: process.env.ETHERSCAN_API_KEY,
 	},
 	paths: {
-		sources: '../code',
+		sources: './contracts',
 		tests: './test',
 		cache: './cache',
 		artifacts: './artifacts',
-	},
-};
-			sepolia: process.env.ETHERSCAN_API_KEY || '',
-		},
-	},
-	gasReporter: {
-		enabled: process.env.REPORT_GAS !== undefined,
-		currency: 'USD',
 	},
 };

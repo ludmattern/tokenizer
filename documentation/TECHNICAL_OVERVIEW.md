@@ -1,42 +1,42 @@
-# Technical Overview
+# Vue technique
 
 ## Architecture
 
-MATTERN42 Token project consists of two main smart contracts working together to provide a secure token ecosystem.
+Le projet MATTERN42 Token consiste en deux contrats intelligents collaborant pour fournir un écosystème de token sécurisé.
 
-### Components
+### Composants
 
-#### 1. MATTERN42Token.sol
+#### MATTERN42Token.sol
 
-ERC20-compliant token with enhanced security features:
+Token ERC20 avec fonctionnalités de sécurité renforcées :
 
-- **Standard Functions**: transfer, approve, allowance
-- **Supply Management**: minting (capped), burning
-- **Security Features**: pausable transfers, ownership control
-- **Events**: comprehensive event logging
+- **Fonctions standard** : transfer, approve, allowance
+- **Gestion du supply** : minting (plafonné), burning
+- **Sécurité** : transferts pausables, contrôle de propriété
+- **Events** : logging complet des événements
 
-#### 2. MultiSigWallet.sol
+#### MultiSigWallet.sol
 
-Multi-signature wallet for secure operations:
+Portefeuille multi-signature pour opérations sécurisées :
 
-- **Transaction Management**: submit, confirm, execute
-- **Security**: multiple owner approval system
-- **Flexibility**: revokable confirmations
-- **Transparency**: full on-chain audit trail
+- **Gestion des transactions** : soumettre, confirmer, exécuter
+- **Sécurité** : système d'approbation multi-propriétaires
+- **Flexibilité** : confirmations révocables
+- **Transparence** : audit trail complet on-chain
 
-## Token Specifications
+## Spécifications du token
 
-### Core Properties
+### Propriétés principales
 
-- **Name**: MATTERN42Token
-- **Symbol**: M42T
-- **Decimals**: 18
-- **Max Supply**: 1,000,000 tokens
-- **Initial Supply**: 100,000 tokens (configurable)
+- **Nom** : MATTERN42Token
+- **Symbole** : M42T
+- **Décimales** : 18
+- **Supply max** : 1,000,000 tokens
+- **Supply initial** : 100,000 tokens (configurable)
 
-### Technical Features
+### Fonctionnalités techniques
 
-#### Supply Management
+#### Gestion du supply
 
 ```solidity
 uint256 public constant MAX_SUPPLY = 1000000 * 10**18;
@@ -47,7 +47,7 @@ function mint(address to, uint256 amount) external onlyOwner {
 }
 ```
 
-#### Emergency Controls
+#### Contrôles d'urgence
 
 ```solidity
 function pause() external onlyOwner {
@@ -59,22 +59,22 @@ function _beforeTokenTransfer(...) internal override whenNotPaused {
 }
 ```
 
-## MultiSig Implementation
+## Implémentation MultiSig
 
 ### Configuration
 
-- **Owners**: 3 addresses (configurable)
-- **Required Confirmations**: 2 out of 3 (configurable)
-- **Transaction Types**: Any contract interaction
+- **Propriétaires** : 3 adresses (configurable)
+- **Confirmations requises** : 2 sur 3 (configurable)
+- **Types de transactions** : Toute interaction de contrat
 
 ### Workflow
 
-1. **Submit**: Owner proposes transaction
-2. **Confirm**: Other owners approve transaction
-3. **Execute**: After threshold met, execute transaction
-4. **Revoke**: Owners can withdraw approval before execution
+1. **Soumettre** : Un propriétaire propose une transaction
+2. **Confirmer** : Les autres propriétaires approuvent
+3. **Exécuter** : Après seuil atteint, exécuter la transaction
+4. **Révoquer** : Les propriétaires peuvent retirer leur approbation
 
-### Security Model
+### Modèle de sécurité
 
 ```solidity
 modifier onlyOwner() {
@@ -88,133 +88,93 @@ modifier txExists(uint _txIndex) {
 }
 ```
 
-## Gas Optimization
+## Optimisation du gas
 
-### Deployment Costs
+### Coûts de déploiement
 
-- **Token Contract**: ~1,200,000 gas
-- **MultiSig Contract**: ~800,000 gas
+- **Contrat Token** : ~1,200,000 gas
+- **Contrat MultiSig** : ~800,000 gas
 
-### Operation Costs
+### Coûts d'opération
 
-- **Transfer**: ~21,000 gas
-- **Mint**: ~50,000 gas
-- **MultiSig Submit**: ~80,000 gas
-- **MultiSig Execute**: ~100,000+ gas (depends on operation)
+- **Transfer** : ~21,000 gas
+- **Mint** : ~50,000 gas
+- **MultiSig Submit** : ~80,000 gas
+- **MultiSig Execute** : ~100,000+ gas (dépend de l'opération)
 
-## Security Features
+## Fonctionnalités de sécurité
 
-### Access Control
+### Contrôle d'accès
 
-- **Owner-only functions**: mint, pause, ownership transfer
-- **MultiSig protection**: critical operations require multiple approvals
-- **Role separation**: token operations vs wallet operations
+- **Fonctions owner-only** : mint, pause, transfert de propriété
+- **Protection MultiSig** : opérations critiques nécessitent approbations multiples
+- **Séparation des rôles** : opérations token vs wallet
 
-### Attack Prevention
+### Prévention d'attaques
 
-- **Reentrancy**: Uses OpenZeppelin's secure patterns
-- **Integer overflow**: Solidity 0.8+ built-in protection
-- **Front-running**: MultiSig delays protect critical operations
+- **Reentrancy** : Utilise les patterns sécurisés OpenZeppelin
+- **Integer overflow** : Protection intégrée Solidity 0.8+
+- **Front-running** : Délais MultiSig protègent les opérations critiques
 
-### Emergency Procedures
+### Procédures d'urgence
 
-- **Pause mechanism**: Stop all transfers if needed
-- **MultiSig revocation**: Cancel transactions before execution
-- **Ownership transfer**: Move control to new address
+- **Mécanisme de pause** : Arrêter tous les transferts si nécessaire
+- **Révocation MultiSig** : Annuler les transactions avant exécution
+- **Transfert de propriété** : Déplacer le contrôle vers nouvelle adresse
 
-## Testing Strategy
+## Stratégie de test
 
-### Unit Tests
+### Tests unitaires
 
-- All token functions (transfer, mint, burn, pause)
-- MultiSig workflow (submit, confirm, execute, revoke)
-- Access control and permissions
-- Edge cases and error conditions
+- Toutes les fonctions token (transfer, mint, burn, pause)
+- Workflow MultiSig (submit, confirm, execute, revoke)
+- Contrôle d'accès et permissions
+- Cas limites et conditions d'erreur
 
-### Integration Tests
+### Tests d'intégration
 
-- Token + MultiSig interaction
-- Ownership transfer scenarios
-- Emergency procedure testing
-- Gas usage optimization
+- Interaction Token + MultiSig
+- Scénarios de transfert de propriété
+- Test des procédures d'urgence
+- Optimisation de l'usage du gas
 
-### Test Coverage
-
-- Functions: 100%
-- Branches: 95%+
-- Lines: 98%+
-
-## Development Tools
+## Outils de développement
 
 ### Framework
 
-- **Hardhat**: Development environment
-- **OpenZeppelin**: Security-audited libraries
-- **Ethers.js**: Ethereum interaction library
+- **Hardhat** : Environnement de développement
+- **OpenZeppelin** : Bibliothèques auditées
+- **Ethers.js** : Bibliothèque d'interaction Ethereum
 
-### Testing
+### Test et déploiement
 
-- **Mocha/Chai**: Test framework
-- **Hardhat Network**: Local blockchain simulation
-- **Gas Reporter**: Optimization analysis
+- **Mocha/Chai** : Framework de test
+- **Hardhat Network** : Simulation blockchain locale
+- **Scripts automatisés** : Déploiement et vérification
 
-### Deployment
-
-- **Scripts**: Automated deployment
-- **Verification**: Contract source verification
-- **Monitoring**: Post-deployment testing
-
-## Network Compatibility
+## Compatibilité réseau
 
 ### Ethereum
 
-- **Mainnet**: Full compatibility
-- **Testnets**: Sepolia, Goerli support
+- **Mainnet** : Compatibilité complète
+- **Testnets** : Support Sepolia
 
-### EVM-Compatible Chains
+### Chaînes compatibles EVM
 
-- **BSC**: Binance Smart Chain
-- **Polygon**: Layer 2 solution
-- **Arbitrum**: Optimistic rollup
+- **BSC** : Binance Smart Chain
+- **Polygon** : Solution Layer 2
+- **Arbitrum** : Optimistic rollup
 
-## Upgradeability
-
-### Current Implementation
-
-- **Non-upgradeable**: Immutable contracts for security
-- **Ownership transfer**: Move control to new systems
-- **Migration**: Manual token migration if needed
-
-### Future Considerations
-
-- **Proxy patterns**: For major upgrades
-- **Governance**: Community-controlled upgrades
-- **Backward compatibility**: Maintain API stability
-
-## Performance Metrics
-
-### Transaction Throughput
-
-- **Ethereum**: 15 TPS
-- **BSC**: 100+ TPS
-- **Polygon**: 1000+ TPS
-
-### Finality
-
-- **Ethereum**: 12-15 seconds
-- **BSC**: 3 seconds
-- **Polygon**: 2 seconds
-
-## Compliance
+## Conformité
 
 ### Standards
 
-- **ERC20**: Full compliance
-- **EIP-165**: Interface detection
-- **OpenZeppelin**: Security standards
+- **ERC20** : Conformité complète
+- **EIP-165** : Détection d'interface
+- **OpenZeppelin** : Standards de sécurité
 
-### Best Practices
+### Bonnes pratiques
 
-- **Documentation**: Comprehensive inline docs
-- **Testing**: Extensive test coverage
-- **Auditing**: Professional review recommended
+- **Documentation** : Documentation inline complète
+- **Tests** : Couverture de test étendue
+- **Audit** : Révision professionnelle recommandée

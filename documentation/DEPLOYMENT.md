@@ -1,215 +1,197 @@
-# Deployment Guide
+# Guide de déploiement
 
-This guide provides step-by-step instructions for deploying MATTERN42 Token and its MultiSig wallet.
+Guide étape par étape pour déployer MATTERN42 Token et son portefeuille MultiSig sur Sepolia.
 
-## Prerequisites
+## Prérequis
 
-### Software Requirements
+### Logiciels
 
-- Node.js v16 or higher
-- npm package manager
-- Git (for version control)
+- Node.js v16+
+- Git
+- Wallet avec ETH Sepolia
 
-### Network Requirements
+### Comptes requis
 
-- Testnet ETH for gas fees
-- Infura account (or similar RPC provider)
-- Etherscan account (for contract verification)
+- [Infura](https://infura.io/) ou autre fournisseur RPC
+- [Etherscan](https://etherscan.io/) pour la vérification
 
-## Environment Setup
+## Configuration
 
-### 1. Initial Setup
+### 1. Initialisation
 
 ```bash
-# Clone and initialize
-git clone <repository-url>
-cd tokenizer
-./init.sh
+# Configuration complète
+make setup
 ```
 
-### 2. Configure Environment Variables
+### 2. Variables d'environnement
 
 ```bash
 cd deployment
 cp .env.example .env
 ```
 
-Edit `.env` with your configuration:
+Éditez `.env` :
 
 ```env
-# Deployment wallet
+# Wallet de déploiement
 PRIVATE_KEY=your_private_key_here
 
-# Network access
+# Accès réseau
 INFURA_API_KEY=your_infura_api_key
 
-# Contract verification
+# Vérification des contrats
 ETHERSCAN_API_KEY=your_etherscan_api_key
 
-# Token configuration
+# Configuration token (optionnel)
 TOKEN_NAME=MATTERN42Token
 TOKEN_SYMBOL=M42T
 INITIAL_SUPPLY=100000
 
-# MultiSig configuration
+# Configuration MultiSig
 MULTISIG_OWNERS=0xOwner1,0xOwner2,0xOwner3
 REQUIRED_CONFIRMATIONS=2
 ```
 
-## Deployment Process
-
-### 1. Pre-deployment Testing
+### 3. Vérifications pré-déploiement
 
 ```bash
-# Compile contracts
-npx hardhat compile
+# Vérifier l'environnement
+make check-env
 
-# Run tests
-npx hardhat test
+# Vérifier le solde
+make check-balance
 
-# Test specific functionality
-npx hardhat test test/MATTERN42Token.test.js
-npx hardhat test test/Multisig.test.js
+# Tests complets
+make test
 ```
 
-### 2. Deploy Token Contract
+## Déploiement
+
+### Étape 1 : Déploiement des contrats
 
 ```bash
-# Deploy to Sepolia testnet
-npx hardhat run scripts/deploy-token.js --network sepolia
-
-# Verify contract (optional)
-npx hardhat verify --network sepolia <TOKEN_ADDRESS> "MATTERN42Token" "M42T" "100000000000000000000000"
+# Déploiement complet sur Sepolia
+make deploy-all
 ```
 
-### 3. Deploy MultiSig Contract
+Cette commande déploie :
+
+1. MATTERN42Token avec les paramètres configurés
+2. MultiSigWallet avec les propriétaires spécifiés
+
+### Étape 2 : Vérification
 
 ```bash
-# Deploy MultiSig wallet
-npx hardhat run scripts/deploy-multisig.js --network sepolia
+# Vérifier le token
+make verify-token TOKEN_ADDRESS=0x...
 
-# Verify contract (optional)
-npx hardhat verify --network sepolia <MULTISIG_ADDRESS> '["0xOwner1","0xOwner2","0xOwner3"]' 2
+# Vérifier le MultiSig
+make verify-multisig MULTISIG_ADDRESS=0x... OWNERS='["0xAddr1","0xAddr2","0xAddr3"]'
 ```
 
-## Post-Deployment Steps
+### Étape 3 : Transfert de propriété (CRITIQUE)
 
-### 1. Transfer Token Ownership to MultiSig
-
-```javascript
-// Create transfer script
-const token = await ethers.getContractAt("MATTERN42Token", TOKEN_ADDRESS);
-await token.transferOwnership(MULTISIG_ADDRESS);
-```
-
-### 2. Verify Deployment
-
-- Check contracts on block explorer
-- Verify token details (name, symbol, supply)
-- Test basic functionality
-- Confirm MultiSig ownership transfer
-
-### 3. Update Documentation
-
-- Record contract addresses
-- Update README with deployment info
-- Document network and explorer links
-
-## Network Information
-
-### Sepolia Testnet
-
-- **Chain ID**: 11155111
-- **RPC**: `https://sepolia.infura.io/v3/YOUR_PROJECT_ID`
-- **Explorer**: <https://sepolia.etherscan.io/>
-- **Faucet**: <https://sepoliafaucet.com/>
-
-### BSC Testnet
-
-- **Chain ID**: 97
-- **RPC**: `https://data-seed-prebsc-1-s1.binance.org:8545`
-- **Explorer**: <https://testnet.bscscan.com/>
-- **Faucet**: <https://testnet.binance.org/faucet-smart>
-
-## Troubleshooting
-
-### Common Issues
-
-- **Gas Errors**: Increase gas limit in hardhat config
-- **Nonce Issues**: Reset account or wait for pending transactions
-- **Network Issues**: Check RPC endpoint and API keys
-- **Verification Failures**: Ensure constructor parameters match
-
-### Gas Estimation
-
-- Token Contract: ~1.2M gas
-- MultiSig Contract: ~800K gas
-- Total Cost: ~0.04 ETH (at 20 gwei)
-
-## Security Checklist
-
-- [ ] Private keys secure and never committed
-- [ ] Contract addresses documented
-- [ ] Ownership transferred to MultiSig
-- [ ] Test transactions successful
-- [ ] Emergency procedures ready
-}
-
-```
-
-**Nonce Issues**
-```bash
-# Reset account nonce
-npx hardhat run scripts/reset-nonce.js --network sepolia
-```
-
-**Verification Failures**
+**Attention : Cette opération est irréversible !**
 
 ```bash
-# Flatten contract for manual verification
-npx hardhat flatten contracts/MATTERN42Token.sol > flattened.sol
+# Transférer la propriété au MultiSig
+make transfer-ownership TOKEN_ADDRESS=0x... MULTISIG_ADDRESS=0x...
 ```
 
-**Connection Issues**
+## Post-déploiement
 
-- Verify RPC URL is correct
-- Check API key permissions
-- Ensure sufficient balance for gas
+### 1. Vérifications obligatoires
 
-**Contract Interaction Failures**
+- [ ] Contrats visibles sur [Sepolia Etherscan](https://sepolia.etherscan.io/)
+- [ ] Détails du token corrects (nom, symbole, supply)
+- [ ] Propriétaires MultiSig confirmés
+- [ ] Propriété du token transférée
 
-- Confirm contract addresses
-- Verify ABI matches deployed contract
-- Check function parameters format
+### 2. Tests fonctionnels
 
-## Gas Optimization
+```bash
+# Vérifier le solde après déploiement
+make check-balance
 
-### Deployment Costs (Sepolia)
+# Tester une transaction MultiSig simple
+```
 
-- **MATTERN42Token**: ~1,200,000 gas
-- **MultiSigWallet**: ~800,000 gas
-- **Total estimated cost**: ~0.04 ETH (at 20 gwei)
+### 3. Documentation
 
-### Optimization Tips
+- Enregistrer les adresses des contrats
+- Mettre à jour la documentation avec les liens Etherscan
+- Partager les adresses avec les propriétaires MultiSig
 
-- Deploy during low network activity
-- Use appropriate gas price
-- Batch related operations
+## Informations Sepolia
 
-## Security Checklist
+- **Chain ID** : 11155111
+- **RPC** : `https://sepolia.infura.io/v3/YOUR_PROJECT_ID`
+- **Explorer** : [https://sepolia.etherscan.io/](https://sepolia.etherscan.io/)
+- **Faucets** :
+  - [https://sepoliafaucet.com/](https://sepoliafaucet.com/)
+  - [https://faucets.chain.link/sepolia](https://faucets.chain.link/sepolia)
 
-- [ ] Private keys stored securely (never in code)
-- [ ] Contract addresses recorded
-- [ ] Ownership transferred to MultiSig
-- [ ] MultiSig owners confirmed
-- [ ] Test transactions completed
-- [ ] Documentation updated with addresses
-- [ ] Emergency procedures documented
-- [ ] Backup access methods prepared
+## Résolution de problèmes
+
+### Erreurs courantes
+
+**Solde insuffisant**
+
+```bash
+# Vérifier le solde
+make check-balance
+
+## Sécurité
+
+### Checklist de sécurité
+
+- [ ] Clés privées sécurisées (jamais dans le code)
+- [ ] Adresses des contrats documentées
+- [ ] Propriété transférée au MultiSig
+- [ ] Propriétaires MultiSig confirmés
+- [ ] Transactions de test réussies
+- [ ] Procédures d'urgence documentées
+
+### Bonnes pratiques
+
+1. **Testez d'abord** : Toujours tester sur Sepolia avant mainnet
+2. **Sauvegardez** : Clés privées et phrases de récupération
+3. **Coordonnez** : Avec les autres propriétaires MultiSig
+4. **Documentez** : Toutes les adresses et procédures
+
+## Workflow MultiSig
+
+### Opérations post-transfert
+
+Une fois la propriété transférée, toutes les opérations critiques nécessitent le MultiSig :
+
+1. **Minting** : Création de nouveaux tokens
+2. **Pause** : Arrêt d'urgence des transferts
+3. **Unpause** : Reprise des opérations
+
+### Exemple : Minter via MultiSig
+
+```bash
+# 1. Encoder l'appel mint
+# 2. Soumettre via MultiSig
+# 3. Confirmer par 2/3 propriétaires
+# 4. Exécuter la transaction
+```
+
+Voir le [Guide utilisateur](./USER_GUIDE.md) pour les détails des opérations MultiSig.
+
+## Support
+
+Pour toute difficulté :
+
+1. Vérifier les logs de transaction sur Etherscan
+2. Consulter la documentation technique
+3. Créer une issue sur le repository
 
 ## Mainnet Deployment
 
-⚠️ **Warning**: Mainnet deployment requires real ETH and careful consideration.
+**Warning**: Mainnet deployment requires real ETH and careful consideration.
 
 ### Pre-mainnet Checklist
 

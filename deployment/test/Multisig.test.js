@@ -31,21 +31,21 @@ describe('MultiSigWallet', function () {
 
 	describe('Transaction submission', function () {
 		it('Should allow owners to submit transactions', async function () {
-			await multisig.connect(owners[0]).submitTransaction(nonOwner.address, ethers.utils.parseEther('1'), '0x');
+			await multisig.connect(owners[0]).submitTransaction(nonOwner.address, ethers.parseEther('1'), '0x');
 
 			const txCount = await multisig.getTransactionCount();
 			expect(txCount).to.equal(1);
 		});
 
 		it('Should not allow non-owners to submit transactions', async function () {
-			await expect(multisig.connect(nonOwner).submitTransaction(nonOwner.address, ethers.utils.parseEther('1'), '0x')).to.be.revertedWith('Not owner');
+			await expect(multisig.connect(nonOwner).submitTransaction(nonOwner.address, ethers.parseEther('1'), '0x')).to.be.revertedWith('Not owner');
 		});
 	});
 
 	describe('Transaction confirmation', function () {
 		beforeEach(async function () {
 			// Submit a transaction first
-			await multisig.connect(owners[0]).submitTransaction(nonOwner.address, ethers.utils.parseEther('1'), '0x');
+			await multisig.connect(owners[0]).submitTransaction(nonOwner.address, ethers.parseEther('1'), '0x');
 		});
 
 		it('Should allow owners to confirm transactions', async function () {
@@ -66,12 +66,12 @@ describe('MultiSigWallet', function () {
 		beforeEach(async function () {
 			// Add some ETH to the contract
 			await owners[0].sendTransaction({
-				to: multisig.address,
-				value: ethers.utils.parseEther('2'),
+				to: await multisig.getAddress(),
+				value: ethers.parseEther('2'),
 			});
 
 			// Submit a transaction
-			await multisig.connect(owners[0]).submitTransaction(nonOwner.address, ethers.utils.parseEther('1'), '0x');
+			await multisig.connect(owners[0]).submitTransaction(nonOwner.address, ethers.parseEther('1'), '0x');
 		});
 
 		it('Should execute transaction with enough confirmations', async function () {
@@ -79,12 +79,12 @@ describe('MultiSigWallet', function () {
 			await multisig.connect(owners[0]).confirmTransaction(0);
 			await multisig.connect(owners[1]).confirmTransaction(0);
 
-			const balanceBefore = await nonOwner.getBalance();
+			const balanceBefore = await ethers.provider.getBalance(nonOwner.address);
 
 			await multisig.connect(owners[0]).executeTransaction(0);
 
-			const balanceAfter = await nonOwner.getBalance();
-			expect(balanceAfter.sub(balanceBefore)).to.equal(ethers.utils.parseEther('1'));
+			const balanceAfter = await ethers.provider.getBalance(nonOwner.address);
+			expect(balanceAfter - balanceBefore).to.equal(ethers.parseEther('1'));
 		});
 
 		it('Should not execute without enough confirmations', async function () {

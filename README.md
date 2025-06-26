@@ -1,223 +1,123 @@
 # MATTERN42 Token Project
 
-## Overview
+## Vue d'ensemble
 
-MATTERN42 Token (M42T) is an ERC20-compliant cryptocurrency with advanced security features including multi-signature wallet functionality. This project demonstrates modern blockchain development practices and secure token management.
+MATTERN42 Token (M42T) est un token ERC20 avec fonctionnalités de sécurité avancées incluant un portefeuille multi-signature pour la gouvernance décentralisée.
 
-## Project Structure
+## Caractéristiques
+
+- **Token ERC20** standard avec supply limitée (1M tokens max)
+- **Multi-Signature Wallet** pour les opérations critiques (2/3 signatures)
+- **Pausable** : arrêt d'urgence des transferts
+- **Mintable/Burnable** : création/destruction contrôlée de tokens
+
+## Structure du projet
 
 ```
 tokenizer/
-├── README.md                    # This file
-├── init.sh                     # Setup script
-├── code/                       # Smart contracts
-├── deployment/                 # Deployment infrastructure
-└── documentation/              # Detailed documentation
+├── Makefile                     # Commandes d'automatisation
+├── init.sh                      # Script d'initialisation legacy
+├── code/                        # Contrats intelligents
+│   ├── MATTERN42.sol           # Token ERC20
+│   └── MultiSigWallet.sol      # Portefeuille multi-signature
+├── deployment/                  # Infrastructure de déploiement
+│   ├── hardhat.config.js       # Configuration Hardhat
+│   ├── scripts/                # Scripts de déploiement
+│   └── test/                   # Tests automatisés
+└── documentation/              # Documentation détaillée
+    ├── DEPLOYMENT.md           # Guide de déploiement
+    ├── TECHNICAL_OVERVIEW.md   # Architecture technique
+    └── USER_GUIDE.md          # Guide utilisateur
 ```
 
-## Key Features
+## Démarrage rapide
 
-- **ERC20 Standard**: Full compliance with ERC20 token standard
-- **Multi-Signature Security**: Advanced transaction approval system
-- **Pausable Operations**: Emergency stop mechanism for security
-- **Supply Management**: Controlled minting and burning capabilities
-
-## Quick Start
-
-1. **Initialize the project:**
+### 1. Configuration initiale
 
 ```bash
-./init.sh
+# Configuration complète du projet
+make setup
+
+# Vérifier le statut
+make status
 ```
 
-2. **Configure deployment:**
+### 2. Configuration de l'environnement
 
 ```bash
 cd deployment
 cp .env.example .env
-# Edit .env with your settings
+# Éditer .env avec vos clés :
+# PRIVATE_KEY=your_private_key
+# INFURA_API_KEY=your_infura_key
+# ETHERSCAN_API_KEY=your_etherscan_key
 ```
 
-3. **Test and deploy:**
+### 3. Développement et tests
 
 ```bash
-npm test
-npm run deploy:sepolia
+# Tests complets
+make test
+
+# Vérifier l'environnement
+make check-env
+
+# Compilation
+make compile
 ```
+
+### 4. Déploiement (Sepolia)
+
+```bash
+# Déploiement complet
+make deploy-all
+
+# Vérification des contrats
+make verify-token TOKEN_ADDRESS=0x...
+make verify-multisig MULTISIG_ADDRESS=0x... OWNERS='["0x...","0x..."]'
+
+# Transfert de propriété (CRITIQUE)
+make transfer-ownership TOKEN_ADDRESS=0x... MULTISIG_ADDRESS=0x...
+```
+
+## Commandes Makefile
+
+| Commande | Description |
+|----------|-------------|
+| `make help` | Afficher toutes les commandes |
+| `make setup` | Configuration complète |
+| `make test` | Tests complets |
+| `make deploy-all` | Déploiement sur Sepolia |
+| `make check-balance` | Vérifier le solde ETH |
+| `make faucet` | Liens vers les faucets testnet |
+
+## Réseau
+
+**Sepolia Testnet uniquement**
+
+- Chain ID : 11155111
+- Explorer : <https://sepolia.etherscan.io/>
+- Faucet : <https://sepoliafaucet.com/>
 
 ## Documentation
 
-For detailed information, please refer to:
+- **[Guide de déploiement](./documentation/DEPLOYMENT.md)** - Déploiement étape par étape
+- **[Vue technique](./documentation/TECHNICAL_OVERVIEW.md)** - Architecture et spécifications
+- **[Guide utilisateur](./documentation/USER_GUIDE.md)** - Utilisation des contrats
 
-- [Technical Documentation](./documentation/README.md) - Complete technical specifications
-- [Deployment Guide](./documentation/DEPLOYMENT.md) - Step-by-step deployment instructions
-- [Security Guide](./documentation/SECURITY.md) - Security best practices
-- [API Reference](./documentation/API.md) - Smart contract API documentation
+## Sécurité
 
-## Contract Addresses
+**Points critiques :**
 
-**Sepolia Testnet:**
-
-- Token: `0x...` (To be updated after deployment)
-- MultiSig: `0x...` (To be updated after deployment)
-
-## License
-
-MIT License - See documentation for full details.
-├── deployment/                 # Deployment infrastructure
-│   ├── package.json
-│   ├── hardhat.config.js
-│   ├── .env.example
-│   ├── scripts/
-│   │   ├── deploy-token.js
-│   │   └── deploy-multisig.js
-│   └── test/
-│       ├── MATTERN42Token.test.js
-│       └── Multisig.test.js
-└── documentation/             # Project documentation
-    ├── README.md
-    ├── DEPLOYMENT.md
-    ├── SECURITY.md
-    └── API.md
-
-```
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js (v16+)
-- npm
-- Git
-
-### Installation
-
-1. Clone the repository
-2. Run the initialization script:
-
-```bash
-./init.sh
-```
-
-3. Configure environment variables:
-
-```bash
-cd deployment
-cp .env.example .env
-# Edit .env with your configuration
-```
-
-### Configuration
-
-Edit `.env` file with your settings:
-
-- `PRIVATE_KEY`: Your deployment wallet private key
-- `INFURA_API_KEY`: Infura project ID for network access
-- `ETHERSCAN_API_KEY`: For contract verification
-- Token configuration (name, symbol, supply)
-- MultiSig configuration (owners, required confirmations)
-
-### Testing
-
-Run comprehensive tests:
-
-```bash
-cd deployment
-npm test
-```
-
-### Deployment
-
-Deploy to testnet:
-
-```bash
-# Deploy token
-npm run deploy:sepolia
-
-# Deploy multisig
-npm run deploy:multisig
-```
-
-## Usage Examples
-
-### Basic Token Operations
-
-```javascript
-// Transfer tokens
-await token.transfer(recipient, amount);
-
-// Approve spending
-await token.approve(spender, amount);
-
-// Mint new tokens (owner only)
-await token.mint(recipient, amount);
-
-// Burn tokens
-await token.burn(amount);
-
-// Pause/unpause (owner only)
-await token.pause();
-await token.unpause();
-```
-
-### MultiSig Operations
-
-```javascript
-// Submit transaction
-await multisig.submitTransaction(target, value, data);
-
-// Confirm transaction
-await multisig.confirmTransaction(txIndex);
-
-// Execute transaction (after enough confirmations)
-await multisig.executeTransaction(txIndex);
-
-// Revoke confirmation
-await multisig.revokeConfirmation(txIndex);
-```
-
-## Security Considerations
-
-1. **Private Key Management**: Never commit private keys to version control
-2. **Multi-Signature**: Use multisig for critical operations
-3. **Testing**: Thoroughly test on testnets before mainnet deployment
-4. **Auditing**: Consider professional smart contract audits
-5. **Upgrade Path**: Plan for potential contract upgrades
-
-## Network Information
-
-### Testnet Deployment
-
-- **Network**: Sepolia Testnet
-- **Explorer**: <https://sepolia.etherscan.io/>
-
-### Contract Addresses
-
-(To be updated after deployment)
-
-- **Token Contract**: `0x...`
-- **MultiSig Contract**: `0x...`
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests
-5. Submit a pull request
-
-## License
-
-This project is licensed under the MIT License.
+- Le transfert de propriété vers le MultiSig est **irréversible**
+- Testez toujours sur Sepolia avant mainnet
+- Sauvegardez les clés privées des propriétaires MultiSig
+- Coordonnez avec les autres propriétaires avant les opérations
 
 ## Support
 
-For questions or issues, please create an issue in the GitHub repository.
+Pour toute question, consultez la documentation ou créez une issue sur le repository.
 
-## Roadmap
+## Licence
 
-- [ ] Token deployment on mainnet
-- [ ] DeFi integrations
-- [ ] Governance features
-- [ ] Staking mechanisms
-- [ ] Cross-chain compatibility
+MIT License
