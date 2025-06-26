@@ -9,10 +9,6 @@ async function main() {
 	const [deployer] = await ethers.getSigners();
 	console.log('Deploying contracts with account:', deployer.address);
 
-	// Configuration gas économique
-	const gasPrice = process.env.GAS_PRICE ? ethers.parseUnits(process.env.GAS_PRICE, 'gwei') : ethers.parseUnits('2', 'gwei');
-	console.log('Using gas price:', ethers.formatUnits(gasPrice, 'gwei'), 'gwei');
-
 	// MultiSig parameters
 	const ownersString = process.env.MULTISIG_OWNERS || deployer.address;
 	const owners = ownersString.split(',').map((addr) => addr.trim());
@@ -21,14 +17,11 @@ async function main() {
 	console.log('MultiSig Owners:', owners);
 	console.log('Required Confirmations:', requiredConfirmations);
 
-	// Deploy MultiSig avec frais réduits
+	// Deploy MultiSig (let Hardhat handle gas automatically)
 	const MultiSigWallet = await ethers.getContractFactory('MultiSigWallet');
-	const multisig = await MultiSigWallet.deploy(owners, requiredConfirmations, {
-		gasPrice: gasPrice,
-		gasLimit: process.env.GAS_LIMIT || 6000000,
-	});
+	const multisig = await MultiSigWallet.deploy(owners, requiredConfirmations);
 
-	console.log('⏳ Waiting for deployment (may take longer with low gas price)...');
+	console.log('Waiting for deployment...');
 	await multisig.waitForDeployment();
 
 	console.log('MultiSigWallet deployed to:', await multisig.getAddress());
@@ -58,7 +51,7 @@ async function main() {
 
 	const deploymentFile = path.join(deploymentsDir, `multisig-${hre.network.name}.json`);
 	fs.writeFileSync(deploymentFile, JSON.stringify(deploymentInfo, null, 2));
-	console.log(`\n📄 Deployment info saved to: ${deploymentFile}`);
+	console.log(`\nDeployment info saved to: ${deploymentFile}`);
 
 	// Update .env file with MULTISIG_ADDRESS
 	const envFile = path.join(__dirname, '..', '.env');
@@ -74,7 +67,7 @@ async function main() {
 		}
 
 		fs.writeFileSync(envFile, envContent);
-		console.log(`✅ MULTISIG_ADDRESS updated in .env: ${await multisig.getAddress()}`);
+		console.log(`MULTISIG_ADDRESS updated in .env: ${await multisig.getAddress()}`);
 	}
 }
 

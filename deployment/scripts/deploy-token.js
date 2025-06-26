@@ -11,23 +11,16 @@ async function main() {
 	const balance = await ethers.provider.getBalance(deployer.address);
 	console.log('Account balance:', ethers.formatEther(balance), 'ETH');
 
-	// Configuration gas économique
-	const gasPrice = process.env.GAS_PRICE ? ethers.parseUnits(process.env.GAS_PRICE, 'gwei') : ethers.parseUnits('2', 'gwei');
-	console.log('Using gas price:', ethers.formatUnits(gasPrice, 'gwei'), 'gwei');
-
 	// Token parameters
 	const tokenName = process.env.TOKEN_NAME || 'MATTERN42Token';
 	const tokenSymbol = process.env.TOKEN_SYMBOL || 'M42T';
 	const initialSupply = ethers.parseEther(process.env.INITIAL_SUPPLY || '100000');
 
-	// Deploy token avec frais réduits
+	// Deploy token (let Hardhat handle gas automatically)
 	const MATTERN42Token = await ethers.getContractFactory('MATTERN42Token');
-	const token = await MATTERN42Token.deploy(tokenName, tokenSymbol, initialSupply, {
-		gasPrice: gasPrice,
-		gasLimit: process.env.GAS_LIMIT || 6000000,
-	});
+	const token = await MATTERN42Token.deploy(tokenName, tokenSymbol, initialSupply);
 
-	console.log('⏳ Waiting for deployment (may take longer with low gas price)...');
+	console.log('Waiting for deployment...');
 	await token.waitForDeployment();
 
 	console.log('MATTERN42Token deployed to:', await token.getAddress());
@@ -60,7 +53,7 @@ async function main() {
 
 	const deploymentFile = path.join(deploymentsDir, `token-${network.name}.json`);
 	fs.writeFileSync(deploymentFile, JSON.stringify(deploymentInfo, null, 2));
-	console.log(`\n📄 Deployment info saved to: ${deploymentFile}`);
+	console.log(`\nDeployment info saved to: ${deploymentFile}`);
 
 	// Update .env file with TOKEN_ADDRESS
 	const envFile = path.join(__dirname, '..', '.env');
@@ -76,7 +69,7 @@ async function main() {
 		}
 
 		fs.writeFileSync(envFile, envContent);
-		console.log(`✅ TOKEN_ADDRESS updated in .env: ${await token.getAddress()}`);
+		console.log(`TOKEN_ADDRESS updated in .env: ${await token.getAddress()}`);
 	}
 }
 

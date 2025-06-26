@@ -26,12 +26,12 @@ async function main() {
 			constructorArguments: [ownersArray, parseInt(REQUIRED_CONFIRMATIONS)],
 		});
 
-		console.log('✅ MultiSigWallet verification successful!');
-		console.log(`🔗 View on Etherscan: https://sepolia.etherscan.io/address/${MULTISIG_ADDRESS}#code`);
+		console.log('MultiSigWallet verification successful!');
+		console.log(`View on Etherscan: https://sepolia.etherscan.io/address/${MULTISIG_ADDRESS}#code`);
 	} catch (error) {
 		if (error.message.includes('Already Verified')) {
-			console.log('✅ Contract already verified on Etherscan');
-			console.log(`🔗 View on Etherscan: https://sepolia.etherscan.io/address/${MULTISIG_ADDRESS}#code`);
+			console.log('Contract already verified on Etherscan');
+			console.log(`View on Etherscan: https://sepolia.etherscan.io/address/${MULTISIG_ADDRESS}#code`);
 		} else {
 			throw error;
 		}
@@ -41,6 +41,6 @@ async function main() {
 main()
 	.then(() => process.exit(0))
 	.catch((error) => {
-		console.error('❌ Verification failed:', error);
+		console.error('Verification failed:', error);
 		process.exit(1);
 	});

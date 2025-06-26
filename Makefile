@@ -120,19 +120,18 @@ verify-deployment: ## Verify deployed contracts functionality
 	@echo "$(GREEN)Verifying deployed contracts...$(NC)"
 	@cd deployment && npx hardhat run scripts/verify-deployment.js --network sepolia
 
-faucet: ## Show faucet information for Sepolia
-	@echo "$(GREEN)Sepolia Testnet Faucets:$(NC)"
-	@echo "  • https://sepoliafaucet.com/"
-	@echo "  • https://faucets.chain.link/sepolia"
-	@echo "  • https://www.alchemy.com/faucets/ethereum-sepolia"
+test-multisig: ## Test MultiSig functionality with a mint transaction
+	@echo "$(GREEN)Testing MultiSig functionality...$(NC)"
+	@cd deployment && npx hardhat run scripts/test-multisig.js --network sepolia
 
-network-info: ## Show network information
-	@echo "$(GREEN)Network Information:$(NC)"
-	@echo "$(YELLOW)Sepolia Testnet:$(NC)"
-	@echo "  • Chain ID: 11155111"
-	@echo "  • RPC: https://sepolia.infura.io/v3/YOUR_PROJECT_ID"
-	@echo "  • Explorer: https://sepolia.etherscan.io/"
-	@echo "  • Faucet: https://sepoliafaucet.com/"
+# MultiSig operations
+confirm-tx: ## Confirm MultiSig transaction with primary account (use TX_INDEX=n for specific transaction)
+	@echo "$(GREEN)Confirming transaction with PRIMARY account...$(NC)"
+	@cd deployment && npx hardhat run scripts/confirm-transaction.js --network sepolia
+
+confirm-tx-second: ## Confirm MultiSig transaction with second account (use TX_INDEX=n for specific transaction)
+	@echo "$(GREEN)Confirming transaction with SECOND account...$(NC)"
+	@cd deployment && USE_SECOND_ACCOUNT=true npx hardhat run scripts/confirm-transaction.js --network sepolia
 
 # Documentation
 docs: ## Open documentation

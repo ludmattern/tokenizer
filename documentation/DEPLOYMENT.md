@@ -1,212 +1,217 @@
-# Guide de déploiement
+# Deployment Guide
 
-Guide étape par étape pour déployer MATTERN42 Token et son portefeuille MultiSig sur Sepolia.
+Step-by-step guide to deploy MATTERN42 Token and its MultiSig wallet on Sepolia.
 
-## Prérequis
+## Prerequisites
 
-### Logiciels
+### Software
 
 - Node.js v16+
 - Git
-- Wallet avec ETH Sepolia
+- Wallet with Sepolia ETH
 
-### Comptes requis
+### Required Accounts
 
-- [Infura](https://infura.io/) ou autre fournisseur RPC
-- [Etherscan](https://etherscan.io/) pour la vérification
+- [Infura](https://infura.io/) or other RPC provider
+- [Etherscan](https://etherscan.io/) for verification
 
 ## Configuration
 
-### 1. Initialisation
+### 1. Initialization
 
 ```bash
-# Configuration complète
+# Complete setup
 make setup
 ```
 
-### 2. Variables d'environnement
+### 2. Environment Variables
 
 ```bash
 cd deployment
 cp .env.example .env
 ```
 
-Éditez `.env` :
+Edit `.env`:
 
 ```env
-# Wallet de déploiement
+# Deployment wallet
 PRIVATE_KEY=your_private_key_here
 
-# Accès réseau
+# Network access
 INFURA_API_KEY=your_infura_api_key
 
-# Vérification des contrats
+# Contract verification
 ETHERSCAN_API_KEY=your_etherscan_api_key
 
-# Configuration token (optionnel)
+# Token configuration (optional)
 TOKEN_NAME=MATTERN42Token
 TOKEN_SYMBOL=M42T
 INITIAL_SUPPLY=100000
 
-# Configuration MultiSig
+# MultiSig configuration
 MULTISIG_OWNERS=0xOwner1,0xOwner2,0xOwner3
 REQUIRED_CONFIRMATIONS=2
 ```
 
-### 3. Vérifications pré-déploiement
+### 3. Pre-deployment Checks
 
 ```bash
-# Vérifier l'environnement
+# Check environment
 make check-env
 
-# Vérifier le solde
+# Check balance
 make check-balance
 
-# Tests complets
+# Complete tests
 make test
 ```
 
-## Déploiement
+## Deployment
 
-### Étape 1 : Déploiement des contrats
+### Step 1: Deploy Contracts
 
 ```bash
-# Déploiement complet sur Sepolia
+# Complete deployment on Sepolia
 make deploy-all
 ```
 
-Cette commande déploie :
+This command deploys:
 
-1. MATTERN42Token avec les paramètres configurés
-2. MultiSigWallet avec les propriétaires spécifiés
+1. MATTERN42Token with configured parameters
+2. MultiSigWallet with specified owners
 
-### Étape 2 : Vérification
+### Step 2: Verification
 
 ```bash
-# Vérifier le token
+# Verify token
 make verify-token TOKEN_ADDRESS=0x...
 
-# Vérifier le MultiSig
+# Verify MultiSig
 make verify-multisig MULTISIG_ADDRESS=0x... OWNERS='["0xAddr1","0xAddr2","0xAddr3"]'
 ```
 
-### Étape 3 : Transfert de propriété (CRITIQUE)
+### Step 3: Ownership Transfer (CRITICAL)
 
-**Attention : Cette opération est irréversible !**
+**Warning: This operation is irreversible!**
 
 ```bash
-# Transférer la propriété au MultiSig
+# Transfer ownership to MultiSig
 make transfer-ownership TOKEN_ADDRESS=0x... MULTISIG_ADDRESS=0x...
 ```
 
-## Post-déploiement
+## Post-deployment
 
-### 1. Vérifications obligatoires
+### 1. Mandatory Checks
 
-- [ ] Contrats visibles sur [Sepolia Etherscan](https://sepolia.etherscan.io/)
-- [ ] Détails du token corrects (nom, symbole, supply)
-- [ ] Propriétaires MultiSig confirmés
-- [ ] Propriété du token transférée
+- [ ] Contracts visible on [Sepolia Etherscan](https://sepolia.etherscan.io/)
+- [ ] Correct token details (name, symbol, supply)
+- [ ] MultiSig owners confirmed
+- [ ] Token ownership transferred
 
-### 2. Tests fonctionnels
+### 2. Functional Tests
 
 ```bash
-# Vérifier le solde après déploiement
+# Check balance after deployment
 make check-balance
 
-# Tester une transaction MultiSig simple
+# Test simple MultiSig transaction
 ```
 
 ### 3. Documentation
 
-- Enregistrer les adresses des contrats
-- Mettre à jour la documentation avec les liens Etherscan
-- Partager les adresses avec les propriétaires MultiSig
+- Record contract addresses
+- Update documentation with Etherscan links
+- Share addresses with MultiSig owners
 
-## Informations Sepolia
+## Sepolia Information
 
-- **Chain ID** : 11155111
-- **RPC** : `https://sepolia.infura.io/v3/YOUR_PROJECT_ID`
-- **Explorer** : [https://sepolia.etherscan.io/](https://sepolia.etherscan.io/)
-- **Faucets** :
+- **Chain ID**: 11155111
+- **RPC**: `https://sepolia.infura.io/v3/YOUR_PROJECT_ID`
+- **Explorer**: [https://sepolia.etherscan.io/](https://sepolia.etherscan.io/)
+- **Faucets**:
   - [https://sepoliafaucet.com/](https://sepoliafaucet.com/)
   - [https://faucets.chain.link/sepolia](https://faucets.chain.link/sepolia)
 
-## Résolution de problèmes
+## Troubleshooting
 
-### Erreurs courantes
+### Common Errors
 
-**Solde insuffisant**
+**Insufficient Balance**
 
 ```bash
-# Vérifier le solde
+# Check balance
 make check-balance
 
-## Sécurité
-
-### Checklist de sécurité
-
-- [ ] Clés privées sécurisées (jamais dans le code)
-- [ ] Adresses des contrats documentées
-- [ ] Propriété transférée au MultiSig
-- [ ] Propriétaires MultiSig confirmés
-- [ ] Transactions de test réussies
-- [ ] Procédures d'urgence documentées
-
-### Bonnes pratiques
-
-1. **Testez d'abord** : Toujours tester sur Sepolia avant mainnet
-2. **Sauvegardez** : Clés privées et phrases de récupération
-3. **Coordonnez** : Avec les autres propriétaires MultiSig
-4. **Documentez** : Toutes les adresses et procédures
-
-## Workflow MultiSig
-
-### Opérations post-transfert
-
-Une fois la propriété transférée, toutes les opérations critiques nécessitent le MultiSig :
-
-1. **Minting** : Création de nouveaux tokens
-2. **Pause** : Arrêt d'urgence des transferts
-3. **Unpause** : Reprise des opérations
-
-### Exemple : Minter via MultiSig
-
-```bash
-# 1. Encoder l'appel mint
-# 2. Soumettre via MultiSig
-# 3. Confirmer par 2/3 propriétaires
-# 4. Exécuter la transaction
+# Get testnet ETH from faucets
+make faucet
 ```
 
-Voir le [Guide utilisateur](./USER_GUIDE.md) pour les détails des opérations MultiSig.
+**RPC Connection Issues**
+
+- Verify INFURA_API_KEY in .env
+- Check network connectivity
+- Try alternative RPC endpoints
+
+**Verification Failures**
+
+- Wait a few minutes after deployment
+- Verify contract addresses are correct
+- Check constructor parameters format
+
+## Security
+
+### Security Checklist
+
+- [ ] Private keys secured (never in code)
+- [ ] Contract addresses documented
+- [ ] Ownership transferred to MultiSig
+- [ ] MultiSig owners confirmed
+- [ ] Test transactions successful
+- [ ] Emergency procedures documented
+
+### Best Practices
+
+1. **Test First**: Always test on Sepolia before mainnet
+2. **Backup**: Private keys and recovery phrases
+3. **Coordinate**: With other MultiSig owners
+4. **Document**: All addresses and procedures
+
+## MultiSig Workflow
+
+### Post-transfer Operations
+
+Once ownership is transferred, all critical operations require MultiSig:
+
+1. **Minting**: Creating new tokens
+2. **Pause**: Emergency stop of transfers
+3. **Unpause**: Resume operations
+
+### Example: Minting via MultiSig
+
+```bash
+# 1. Encode mint call
+# 2. Submit via MultiSig
+# 3. Confirm by 2/3 owners
+# 4. Execute transaction
+```
+
+See [User Guide](./USER_GUIDE.md) for detailed MultiSig operations.
 
 ## Support
 
-Pour toute difficulté :
+For any difficulties:
 
-1. Vérifier les logs de transaction sur Etherscan
-2. Consulter la documentation technique
-3. Créer une issue sur le repository
+1. Check transaction logs on Etherscan
+2. Consult technical documentation
+3. Create an issue on the repository
 
-## Mainnet Deployment
+## Next Steps
 
-**Warning**: Mainnet deployment requires real ETH and careful consideration.
+After successful Sepolia deployment:
 
-### Pre-mainnet Checklist
+1. **Test thoroughly**: Verify all functions work as expected
+2. **Document addresses**: Update all references with deployed addresses
+3. **Coordinate**: With MultiSig owners for operational procedures
+4. **Monitor**: Initial transactions and gas usage
 
-1. Thoroughly test on testnets
-2. Consider professional audit
-3. Use hardware wallet for deployment
-4. Have emergency procedures ready
-5. Monitor initial transactions closely
-6. Prepare community communications
-7. Document all parameters and addresses
-
-### Mainnet Networks
-
-- **Ethereum**: Higher security, higher fees
-- **BSC**: Lower fees, good ecosystem
-- **Polygon**: Fast transactions, low fees
-
-Choose based on your project's needs and target audience.
+For mainnet deployment, consider professional audit and enhanced security measures.

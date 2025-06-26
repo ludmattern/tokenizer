@@ -25,7 +25,7 @@ npm install
 
 # Créer le fichier .env s'il n'existe pas
 if [ ! -f .env ]; then
-	echo "📝 Création du fichier .env..."
+	echo "Création du fichier .env..."
 	cp .env.example .env
 	echo "N'oubliez pas de modifier le fichier .env avec vos clés !"
 fi

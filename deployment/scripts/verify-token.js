@@ -28,12 +28,12 @@ async function main() {
 			constructorArguments: [tokenName, tokenSymbol, initialSupply],
 		});
 
-		console.log('✅ MATTERN42Token verification successful!');
-		console.log(`🔗 View on Etherscan: https://sepolia.etherscan.io/address/${TOKEN_ADDRESS}#code`);
+		console.log('MATTERN42Token verification successful!');
+		console.log(`View on Etherscan: https://sepolia.etherscan.io/address/${TOKEN_ADDRESS}#code`);
 	} catch (error) {
 		if (error.message.includes('Already Verified')) {
-			console.log('✅ Contract already verified on Etherscan');
-			console.log(`🔗 View on Etherscan: https://sepolia.etherscan.io/address/${TOKEN_ADDRESS}#code`);
+			console.log('Contract already verified on Etherscan');
+			console.log(`View on Etherscan: https://sepolia.etherscan.io/address/${TOKEN_ADDRESS}#code`);
 		} else {
 			throw error;
 		}
@@ -43,6 +43,6 @@ async function main() {
 main()
 	.then(() => process.exit(0))
 	.catch((error) => {
-		console.error('❌ Verification failed:', error);
+		console.error('Verification failed:', error);
 		process.exit(1);
 	});

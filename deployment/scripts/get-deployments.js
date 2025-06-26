@@ -21,13 +21,13 @@ function getDeployments(network = 'sepolia') {
 }
 
 function printDeployments(network = 'sepolia') {
-	console.log(`📋 Deployments on ${network.toUpperCase()}:`);
+	console.log(`Deployments on ${network.toUpperCase()}:`);
 	console.log('='.repeat(40));
 
 	const deployments = getDeployments(network);
 
 	if (deployments.token) {
-		console.log('\n🪙 TOKEN:');
+		console.log('\nTOKEN:');
 		console.log(`   Address: ${deployments.token.tokenAddress}`);
 		console.log(`   Name: ${deployments.token.tokenName}`);
 		console.log(`   Symbol: ${deployments.token.tokenSymbol}`);
@@ -37,7 +37,7 @@ function printDeployments(network = 'sepolia') {
 	}
 
 	if (deployments.multisig) {
-		console.log('\n🔒 MULTISIG:');
+		console.log('\nMULTISIG:');
 		console.log(`   Address: ${deployments.multisig.multisigAddress}`);
 		console.log(`   Owners: ${deployments.multisig.owners.length}`);
 		console.log(`   Required: ${deployments.multisig.requiredConfirmations}`);
@@ -46,11 +46,10 @@ function printDeployments(network = 'sepolia') {
 	}
 
 	if (!deployments.token && !deployments.multisig) {
-		console.log('❌ No deployments found');
+		console.log('No deployments found');
 	}
 }
 
-// Si appelé directement
 if (require.main === module) {
 	const network = process.argv[2] || 'sepolia';
 	printDeployments(network);
