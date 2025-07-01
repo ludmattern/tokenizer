@@ -156,7 +156,6 @@ modifier txExists(uint _txIndex) {
 ### Standards
 
 - **ERC20**: Full compliance
-- **EIP-165**: Interface detection
 - **OpenZeppelin**: Security standards
 
 ## Project Compliance
