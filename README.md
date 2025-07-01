@@ -16,12 +16,15 @@ MATTERN42 Token (M42T) is an ERC20 token with advanced security features includi
 ```
 tokenizer/
 ├── Makefile                     # Automation commands
+├── README.md                    # Project overview
 ├── code/                        # Smart contracts
 │   ├── MATTERN42.sol           # ERC20 Token
 │   └── MultiSigWallet.sol      # Multi-signature wallet
 ├── deployment/                  # Deployment infrastructure
 │   ├── hardhat.config.js       # Hardhat configuration
 │   ├── manage.js               # Deployment and management script
+│   ├── .env.example            # Environment variables template
+│   ├── .env                    # Environment variables (to be created)
 │   └── test/                   # Automated tests
 └── documentation/              # Detailed documentation
     ├── DEPLOYMENT.md           # Deployment guide
@@ -36,6 +39,9 @@ tokenizer/
 ```bash
 # Complete project setup
 make setup
+
+# Deploy
+make deploy
 
 # Check status
 make status
@@ -118,29 +124,6 @@ npx hardhat verify --network sepolia MULTISIG_ADDRESS "['0x...','0x...','0x...']
 
 For any questions, consult the documentation or create an issue on the repository.
 
-## Project Compliance
-
-This project fully complies with the **"Tokenizer" subject requirements**:
-
-### Mandatory Requirements Met
-
-1. **Token with "42" in name**: MATTERN42 Token (M42T) ✓
-2. **README explaining choices**: Complete technical documentation ✓
-3. **Blockchain platform**: Ethereum (Sepolia testnet) ✓
-4. **Programming language**: Solidity with OpenZeppelin ✓
-5. **Development tools**: Hardhat, Ethers.js v6 ✓
-6. **Test chains**: Sepolia testnet only ✓
-7. **Code structure**: `code/` folder with contracts ✓
-8. **Commented code**: Full NatSpec documentation ✓
-9. **Functionality demo**: Comprehensive test suite ✓
-10. **Security**: Ownership controls, pausable, MultiSig ✓
-11. **Deployment folder**: `deployment/` with scripts ✓
-12. **Public blockchain**: Deployed on Sepolia ✓
-13. **Explorer publication**: Verified on Etherscan ✓
-14. **Addresses documented**: In `.env` and documentation ✓
-15. **Documentation folder**: `documentation/` with guides ✓
-16. **Clear documentation**: Professional multi-document structure ✓
-
 ### Bonus Features Implemented
 
 - **Multi-signature wallet**: `MultiSigWallet.sol` for secure governance
@@ -153,7 +136,3 @@ This project fully complies with the **"Tokenizer" subject requirements**:
 - **Token Contract**: Check `.env` file after deployment
 - **MultiSig Wallet**: Check `.env` file after deployment
 - **Explorer**: [Sepolia Etherscan](https://sepolia.etherscan.io/)
-
-## License
-
-MIT License

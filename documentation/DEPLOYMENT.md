@@ -65,21 +65,21 @@ make help
 
 ### Available Commands
 
-Pour voir toutes les commandes disponibles :
+To see all available commands:
 
 ```bash
 make help
 ```
 
-Commandes principales :
+main commands :
 
-- `make setup` - Installation et compilation
-- `make deploy` - Déploiement complet (token + multisig + transfert)
-- `make status` - Affichage du statut des contrats
-- `make mint RECIPIENT=0x... AMOUNT=1000` - Création d'une transaction de mint
-- `make confirm TX=0` - Confirmation d'une transaction MultiSig
-- `make test` - Exécution des tests
-- `make clean` - Nettoyage des artifacts
+- `make setup` - Installation and compilation
+- `make deploy` - Complete deployment (token + multisig + transfer)
+- `make status` - Display contract status
+- `make mint RECIPIENT=0x... AMOUNT=1000` - Create a mint transaction
+- `make confirm TX=0` - Confirm a MultiSig transaction
+- `make test` - Run tests
+- `make clean` - Clean artifacts
 
 ## Deployment
 
