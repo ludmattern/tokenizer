@@ -48,17 +48,14 @@ token.burn(amount)
 #### Create New Tokens
 
 ```javascript
-// Only owner can mint
 await token.mint(recipientAddress, amount);
 ```
 
 #### Emergency Pause
 
 ```javascript
-// Stop all transfers temporarily
 await token.pause();
 
-// Resume normal operations
 await token.unpause();
 ```
 
@@ -83,7 +80,6 @@ await token.transferOwnership(multisigAddress);
 #### 1. Submit Transaction
 
 ```javascript
-// Propose a new transaction
 await multisig.submitTransaction(
     targetAddress,
     ethValue,
@@ -94,21 +90,18 @@ await multisig.submitTransaction(
 #### 2. Confirm Transaction
 
 ```javascript
-// Approve a pending transaction
 await multisig.confirmTransaction(transactionIndex);
 ```
 
 #### 3. Execute Transaction
 
 ```javascript
-// Execute after sufficient confirmations
 await multisig.executeTransaction(transactionIndex);
 ```
 
 #### 4. Revoke Confirmation
 
 ```javascript
-// Withdraw approval before execution
 await multisig.revokeConfirmation(transactionIndex);
 ```
 
@@ -142,7 +135,6 @@ await multisig.revokeConfirmation(transactionIndex);
 ### Basic Transfer
 
 ```javascript
-// Transfer 100 M42T tokens
 const amount = ethers.parseEther("100");
 await token.transfer(recipientAddress, amount);
 ```

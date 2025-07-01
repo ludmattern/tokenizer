@@ -16,13 +16,12 @@ MATTERN42 Token (M42T) is an ERC20 token with advanced security features includi
 ```
 tokenizer/
 ├── Makefile                     # Automation commands
-├── init.sh                      # Legacy initialization script
 ├── code/                        # Smart contracts
 │   ├── MATTERN42.sol           # ERC20 Token
 │   └── MultiSigWallet.sol      # Multi-signature wallet
 ├── deployment/                  # Deployment infrastructure
 │   ├── hardhat.config.js       # Hardhat configuration
-│   ├── scripts/                # Deployment scripts
+│   ├── manage.js               # Deployment and management script
 │   └── test/                   # Automated tests
 └── documentation/              # Detailed documentation
     ├── DEPLOYMENT.md           # Deployment guide
@@ -59,25 +58,23 @@ cp .env.example .env
 # Complete tests
 make test
 
-# Check environment
-make check-env
-
-# Compilation
-make compile
+# Check available commands
+make help
 ```
 
 ### 4. Deployment (Sepolia)
 
 ```bash
-# Complete deployment
-make deploy-all
+# Complete deployment (token + multisig + ownership transfer)
+make deploy
 
-# Contract verification
-make verify-token TOKEN_ADDRESS=0x...
-make verify-multisig MULTISIG_ADDRESS=0x... OWNERS='["0x...","0x..."]'
+# Check deployment status
+make status
 
-# Ownership transfer (CRITICAL)
-make transfer-ownership TOKEN_ADDRESS=0x... MULTISIG_ADDRESS=0x...
+# Contract verification (manual)
+cd deployment
+npx hardhat verify --network sepolia TOKEN_ADDRESS
+npx hardhat verify --network sepolia MULTISIG_ADDRESS "['0x...','0x...','0x...']" 2
 ```
 
 ## Makefile Commands
@@ -87,9 +84,12 @@ make transfer-ownership TOKEN_ADDRESS=0x... MULTISIG_ADDRESS=0x...
 | `make help` | Display all commands |
 | `make setup` | Complete setup |
 | `make test` | Complete tests |
-| `make deploy-all` | Deploy to Sepolia |
-| `make check-balance` | Check ETH balance |
-| `make faucet` | Testnet faucet links |
+| `make deploy` | Deploy to Sepolia |
+| `make status` | Check deployment status |
+| `make mint RECIPIENT=0x... AMOUNT=1000` | Create mint transaction |
+| `make confirm TX=0` | Confirm MultiSig transaction |
+| `make confirm-second TX=0` | Confirm with second account |
+| `make clean` | Clean artifacts |
 
 ## Network
 
@@ -150,8 +150,8 @@ This project fully complies with the **"Tokenizer" subject requirements**:
 
 ### Deployed Contracts (Sepolia)
 
-- **Token Contract**: `0x08c26547b5984CC5BaC4079b8992bc0550beE6ab`
-- **MultiSig Wallet**: `0x87Ca5Fbf839891C37c1dFE95fD8FaE60A0108a2a`
+- **Token Contract**: Check `.env` file after deployment
+- **MultiSig Wallet**: Check `.env` file after deployment
 - **Explorer**: [Sepolia Etherscan](https://sepolia.etherscan.io/)
 
 ## License

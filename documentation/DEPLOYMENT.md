@@ -6,7 +6,7 @@ Step-by-step guide to deploy MATTERN42 Token and its MultiSig wallet on Sepolia.
 
 ### Software
 
-- Node.js v16+
+- Node.js v18+
 - Git
 - Wallet with Sepolia ETH
 
@@ -56,15 +56,30 @@ REQUIRED_CONFIRMATIONS=2
 ### 3. Pre-deployment Checks
 
 ```bash
-# Check environment
-make check-env
-
-# Check balance
-make check-balance
-
-# Complete tests
+# Run tests
 make test
+
+# Check available commands
+make help
 ```
+
+### Available Commands
+
+Pour voir toutes les commandes disponibles :
+
+```bash
+make help
+```
+
+Commandes principales :
+
+- `make setup` - Installation et compilation
+- `make deploy` - Déploiement complet (token + multisig + transfert)
+- `make status` - Affichage du statut des contrats
+- `make mint RECIPIENT=0x... AMOUNT=1000` - Création d'une transaction de mint
+- `make confirm TX=0` - Confirmation d'une transaction MultiSig
+- `make test` - Exécution des tests
+- `make clean` - Nettoyage des artifacts
 
 ## Deployment
 
@@ -72,31 +87,29 @@ make test
 
 ```bash
 # Complete deployment on Sepolia
-make deploy-all
+make deploy
 ```
 
 This command deploys:
 
 1. MATTERN42Token with configured parameters
 2. MultiSigWallet with specified owners
+3. Automatically transfers ownership to MultiSig
 
 ### Step 2: Verification
 
 ```bash
-# Verify token
-make verify-token TOKEN_ADDRESS=0x...
-
-# Verify MultiSig
-make verify-multisig MULTISIG_ADDRESS=0x... OWNERS='["0xAddr1","0xAddr2","0xAddr3"]'
+# Verify contracts using Hardhat
+cd deployment
+npx hardhat verify --network sepolia TOKEN_ADDRESS
+npx hardhat verify --network sepolia MULTISIG_ADDRESS "['0xAddr1','0xAddr2','0xAddr3']" 2
 ```
 
-### Step 3: Ownership Transfer (CRITICAL)
-
-**Warning: This operation is irreversible!**
+### Step 3: Check Deployment Status
 
 ```bash
-# Transfer ownership to MultiSig
-make transfer-ownership TOKEN_ADDRESS=0x... MULTISIG_ADDRESS=0x...
+# Check deployment status and contract info
+make status
 ```
 
 ## Post-deployment
@@ -111,10 +124,12 @@ make transfer-ownership TOKEN_ADDRESS=0x... MULTISIG_ADDRESS=0x...
 ### 2. Functional Tests
 
 ```bash
-# Check balance after deployment
-make check-balance
+# Check deployment status and contract info
+make status
 
-# Test simple MultiSig transaction
+# Test minting via MultiSig (example)
+make mint RECIPIENT=0xYourAddress AMOUNT=1000
+make confirm TX=0
 ```
 
 ### 3. Documentation
@@ -131,28 +146,31 @@ make check-balance
 - **Faucets**:
   - [https://sepoliafaucet.com/](https://sepoliafaucet.com/)
   - [https://faucets.chain.link/sepolia](https://faucets.chain.link/sepolia)
+  - [https://sepolia-faucet.pk910.de/](https://sepolia-faucet.pk910.de/)
+
+> **Note**: Sepolia est le réseau de test recommandé pour Ethereum depuis la fusion (Merge). Goerli et Ropsten sont dépréciés.
 
 ## Troubleshooting
 
 ### Common Errors
 
-**Insufficient Balance**
+#### Insufficient Balance
 
 ```bash
 # Check balance
-make check-balance
+make status
 
-# Get testnet ETH from faucets
-make faucet
+# Get testnet ETH from faucets (manual process)
+# Visit: https://sepoliafaucet.com/ or https://faucets.chain.link/sepolia
 ```
 
-**RPC Connection Issues**
+#### RPC Connection Issues
 
 - Verify INFURA_API_KEY in .env
 - Check network connectivity
 - Try alternative RPC endpoints
 
-**Verification Failures**
+#### Verification Failures
 
 - Wait a few minutes after deployment
 - Verify contract addresses are correct
