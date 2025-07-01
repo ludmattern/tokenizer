@@ -88,20 +88,6 @@ modifier txExists(uint _txIndex) {
 }
 ```
 
-## Gas Optimization
-
-### Deployment Costs
-
-- **Token Contract**: ~1,200,000 gas
-- **MultiSig Contract**: ~800,000 gas
-
-### Operation Costs
-
-- **Transfer**: ~21,000 gas
-- **Mint**: ~50,000 gas
-- **MultiSig Submit**: ~80,000 gas
-- **MultiSig Execute**: ~100,000+ gas (depends on operation)
-
 ## Security Features
 
 ### Access Control

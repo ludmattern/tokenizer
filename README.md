@@ -43,6 +43,9 @@ make setup
 # Deploy
 make deploy
 
+## Verify contracts on Etherscan
+make verify
+
 # Check status
 make status
 ```
@@ -91,6 +94,8 @@ npx hardhat verify --network sepolia MULTISIG_ADDRESS "['0x...','0x...','0x...']
 | `make setup` | Complete setup |
 | `make test` | Complete tests |
 | `make deploy` | Deploy to Sepolia |
+| `make verify` | Verify contracts on Etherscan |
+| `make transfer RECIPIENT=0x... AMOUNT=1000` | Transfer tokens |
 | `make status` | Check deployment status |
 | `make mint RECIPIENT=0x... AMOUNT=1000` | Create mint transaction |
 | `make confirm TX=0` | Confirm MultiSig transaction |
